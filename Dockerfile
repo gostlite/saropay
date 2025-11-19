@@ -30,6 +30,7 @@ COPY . .
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
+RUN python manage.py migrate
 
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
