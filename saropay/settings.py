@@ -40,7 +40,7 @@ if not IS_HEROKU_APP:
 if IS_HEROKU_APP:
     ALLOWED_HOSTS = ["*"]
 else:
-    ALLOWED_HOSTS = ["https://saropay.pythonanywhere.com/","node354a.containers.back4app.com","localhost","127.0.0.1"]
+    ALLOWED_HOSTS = ["https://saropay.pythonanywhere.com/","node354a.containers.back4app.com","saropay-t8yutumj.b4a.run","localhost","127.0.0.1"]
 
 
 # Application definition
