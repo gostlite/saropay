@@ -1,0 +1,197 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}{% endblock %} - SaroPay</title>
+
+    <link rel="shortcut icon" href="{% static 'assets1/images/fav.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'assets1/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets1/css/fontawesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets1/css/jquery-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'assets1/css/plugin/apexcharts.css' %}">
+    <link rel="stylesheet" href="{% static 'assets1/css/plugin/nice-select.css' %}">
+    <link rel="stylesheet" href="{% static 'assets1/css/arafat-font.css' %}">
+    <link rel="stylesheet" href="{% static 'assets1/css/plugin/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'assets1/css/style.css' %}">
+</head>
+
+<body>
+    <!-- start preloader -->
+    <!-- <div class="preloader" id="preloader"></div> -->
+    <!-- end preloader -->
+
+    <!-- Scroll To Top Start-->
+    <a href="javascript:void(0)" class="scrollToTop"><i class="fas fa-angle-double-up"></i></a>
+    <!-- Scroll To Top End -->
+
+    <!-- header-section start -->
+    <header class="header-section body-collapse">
+        <div class="overlay">
+            <div class="container-fruid">
+                <div class="row d-flex header-area">
+                    <div class="navbar-area d-flex align-items-center justify-content-between">
+                        <div class="sidebar-icon">
+                            <img src="{% static 'assets1/images/icon/menu.png' %}" alt="icon">
+                        </div>
+                        <form method="POST" class="flex-fill">
+                            {% csrf_token %}
+                            
+                            <!-- <div class="form-group d-flex align-items-center">
+                                <img src="{% static 'assets1/images/icon/search.png' %}" alt="icon">
+                                <input type="text" placeholder="Type to search...">
+                            </div> -->
+                        </form>
+                        <div class="dashboard-nav">
+                            <div class="single-item user-area">
+                                <div class="profile-area d-flex align-items-center">
+                                    <span class="user-profile">
+                                        <img style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" src="{{ kyc.image.url }}" alt="image">
+                                    </span>
+                                    <i class="fa-solid fa-sort-down"></i>
+                                </div>
+                                <div class="main-area user-content">
+                                    <div class="head-area d-flex align-items-center">
+                                        <div class="profile-img">
+                                            <img style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;" src="{{ kyc.image.url }}" alt="image">
+                                        </div>
+                                        <div class="profile-head">
+                                            <a href="{% url 'core_apps.account:account' %}">
+                                                <h5>{{ kyc.full_name|title }}</h5>
+                                            </a>
+                                            <p class="wallet-id"><small>Account No. {{account.account_number}}</small></p>
+                                            <p class="wallet-id"><small>Pin No. {{account.pin_number}}</small></p>
+                                        </div>
+                                    </div>
+                                    <ul>
+                                        <li class="border-area">
+                                            <a href="{% url 'core_apps.account:account' %}"><i class="fas fa-cog"></i>Settings</a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'core_apps.userauths:sign-out' %}"><i class="fas fa-sign-out"></i>Logout</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sidebar-wrapper">
+                        <div class="close-btn">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+                        <div class="sidebar-logo">
+                            <a href="{% url 'core_apps.account:dashboard' %}"><img src="{% static 'assets1/images/logo.png' %}" alt="logo"></a>
+                        </div>
+                        <ul>
+                            <li>
+                                <a href="{% url 'core_apps.account:dashboard' %}">
+                                    <img src="{% static 'assets1/images/icon/dashboard.png' %}" alt="Dashboard"> <span>Dashboard</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'core_apps.core:transactions' %}">
+                                    <img src="{% static 'assets1/images/icon/transactions.png' %}" alt="Transactions"> <span>Transactions</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'core_apps.core:subscription-plans' %}">
+                                    <img src="{% static 'assets1/images/icon/pay.png' %}" alt="Upgrade"> <span>Upgrade</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'core_apps.core:application' %}">
+                                    <img src="{% static 'assets1/images/icon/transactions.png' %}" alt="LoanGrant"> <span>Loan/Grant</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'core_apps.core:application-status' %}">
+                                    <img src="{% static 'assets1/images/icon/transactions.png' %}" alt="status"> <span>Application status</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'core_apps.core:search-account' %}">
+                                    <img src="{% static 'assets1/images/icon/pay.png' %}" alt="Pay"> <span>Pay</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'core_apps.core:request-search-account' %}">
+                                    <img src="{% static 'assets1/images/icon/receive.png' %}" alt="Receive"> <span>Receive</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                        <ul class="bottom-item">
+                            <li class="active"> 
+                                <a href="{% url 'core_apps.account:account' %}">
+                                    <img src="{% static 'assets1/images/icon/account.png' %}" alt="Account"> <span>Account</span>
+                                </a>
+                            </li>
+                            
+                            <li>
+                                <a href="{% url 'core_apps.userauths:sign-out' %}">
+                                    <img src="{% static 'assets1/images/icon/quit.png' %}" alt="Quit"> <span>Quit</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="pt-120">
+                            <div class="invite-now">
+                                <div class="img-area">
+                                    <img src="{% static 'assets1/images/invite-now-illus.png' %}" alt="Image">
+                                </div>
+                                <p>Invite your friend and get $25</p>
+                                <a href="javascript:void(0)" class="cmn-btn">Invite Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- alert start -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{message.tags}}">
+            <strong>{{ message }}</strong>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <script>
+            setTimeout (() => {
+                $(".alert").alert("close");
+            }, 4000)
+        </script>
+    </header>
+    <!-- header-section end -->
+{% block content %}
+
+{% endblock content %}
+    <!--==================================================================-->
+    <script src="{% static 'assets1/js/jquery.min.js' %}"></script>
+    <script src="{% static 'assets1/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets1/js/jquery-ui.js' %}"></script>
+    <script src="{% static 'assets1/js/plugin/apexcharts.js' %}"></script>
+    <script src="{% static 'assets1/js/plugin/jquery.nice-select.min.js' %}"></script>
+    <script src="{% static 'assets1/js/plugin/waypoint.min.js' %}"></script>
+    <script src="{% static 'assets1/js/plugin/wow.min.js' %}"></script>
+    <script src="{% static 'assets1/js/plugin/plugin.js' %}"></script>
+    <script src="{% static 'assets1/js/main.js' %}"></script>
+    <!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/691bab2d56da58195ee47d55/1jaa19b9t';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+</body>
+
+</html>

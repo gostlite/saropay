@@ -1,0 +1,281 @@
+
+{% extends "partials/dashboard-base.html" %}
+{% load static %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Submitted</title>
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --primary-dark-blue: #1e40af;
+            --primary-light-blue: #3b82f6;
+            --light-bg: #f8fafc;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --success-green: #10b981;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .success-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 50px;
+            text-align: center;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            color: var(--success-green);
+            margin-bottom: 20px;
+        }
+        
+        .success-title {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+        }
+        
+        .success-message {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+        
+        .application-details {
+            background: var(--light-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .detail-value {
+            color: var(--text-light);
+        }
+        
+        .next-steps {
+            text-align: left;
+            margin: 30px 0;
+        }
+        
+        .next-steps h3 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+        }
+        
+        .next-steps ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .next-steps li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .next-steps li:before {
+            content: "✓";
+            color: var(--success-green);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark-blue);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .success-card {
+                padding: 30px 20px;
+            }
+            
+            .success-title {
+                font-size: 2rem;
+            }
+            
+            .detail-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-card">
+            <div class="success-icon">✓</div>
+            <h1 class="success-title">Application Submitted Successfully!</h1>
+            <p class="success-message">
+                Thank you for your {{ app_type|title }} application. We have received your submission and will review it shortly.
+            </p>
+            
+            <div class="application-details">
+                <h3 style="color: var(--primary-blue); margin-bottom: 20px; text-align: center;">Application Details</h3>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Application ID:</div>
+                    <div class="detail-value">#{{ application.id }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Full Name:</div>
+                    <div class="detail-value">{{ application.full_name }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Type:</div>
+                    <div class="detail-value">
+                        {% if app_type == 'loan' %}
+                            {{ application.get_loan_type_display }}
+                        {% else %}
+                            {{ application.get_grant_type_display }}
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Amount Requested:</div>
+                    <div class="detail-value">${{ application.amount_requested }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Application Date:</div>
+                    <div class="detail-value">{{ application.application_date|date:"F d, Y" }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Current Status:</div>
+                    <div class="detail-value">
+                        <span class="status-badge status-{{ application.status }}">
+                            {{ application.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="next-steps">
+                <h3>What Happens Next?</h3>
+                <ul>
+                    <li>We will review your application within 3-5 business days</li>
+                    <li>You will receive email updates about your application status</li>
+                    <li>Our team may contact you for additional information</li>
+                    <li>Final decision will be communicated via email and in your dashboard</li>
+                </ul>
+            </div>
+            
+            <div class="btn-group">
+                <a href="{% url 'core_apps.core:application-status' %}" class="btn btn-primary">View Application Status</a>
+                <a href="{% url 'core_apps.core:application' %}" class="btn btn-outline">Apply for Another</a>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock content %}

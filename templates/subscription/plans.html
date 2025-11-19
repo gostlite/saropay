@@ -1,0 +1,284 @@
+{% extends "partials/dashboard-base.html" %}
+{% load static %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Plans</title>
+    <style>
+        :root {
+            --primary-blue: #3498db;
+            --primary-dark-blue: #2980b9;
+            --light-blue: #ebf5fb;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        .subscription-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .plans {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .plan-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .plan-card.popular::before {
+            content: "Most Popular";
+            position: absolute;
+            top: 15px;
+            right: -30px;
+            background: var(--primary-blue);
+            color: white;
+            padding: 5px 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transform: rotate(45deg);
+        }
+        
+        .plan-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+        
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary-blue);
+        }
+        
+        .plan-period {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .plan-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .plan-features li {
+            padding: 8px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .plan-features li::before {
+            content: "✓";
+            color: var(--primary-blue);
+            font-weight: bold;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .plan-features li.disabled {
+            color: var(--text-light);
+        }
+        
+        .plan-features li.disabled::before {
+            content: "✕";
+            color: #e74c3c;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark-blue);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .plans {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="subscription-container">
+        <div class="header">
+            <h1>Choose Your Plan</h1>
+            <p>Select the subscription that best fits your needs. All plans include a 30-day money-back guarantee.</p>
+        </div>
+        
+        <div class="plans">
+            <!-- Free Plan -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div class="plan-name">Free</div>
+                    <div class="plan-price">$0</div>
+                    <div class="plan-period">forever</div>
+                </div>
+                <ul class="plan-features">
+                    <li>Transfer in</li>
+                    <li>Investment</li>
+                    <li>Save</li>
+                    <li>Transfer out</li>
+                    <li class="disabled">Loans</li>
+                    <li class="disabled">Grants</li>
+                    
+                </ul>
+                <button class="btn btn-outline">Get Started</button>
+            </div>
+            
+            <!-- Basic Plan -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div class="plan-name">Basic</div>
+                    <div class="plan-price">$50<span style="font-size: 1rem;">/month</span></div>
+                    <div class="plan-period">billed monthly</div>
+                </div>
+                <ul class="plan-features">
+                    <li>Transfer in</li>
+                    <li>Investment</li>
+                    <li>Save</li>
+                    <li>Transfer out</li>
+                    <li>Loans</li>
+                    <li class="disabled">Grants</li>
+                    
+                </ul>
+                <a href="{% url 'core_apps.core:payment-request-dashboard' %}" class="btn">
+                <button class="btn">Choose Plan</button>
+
+                </a>
+            </div>
+            
+            <!-- Gold Plan -->
+            <div class="plan-card popular">
+                <div class="plan-header">
+                    <div class="plan-name">Gold</div>
+                    <div class="plan-price">$100<span style="font-size: 1rem;">/month</span></div>
+                    <div class="plan-period">billed monthly</div>
+                </div>
+                <ul class="plan-features">
+                     <li>Transfer in</li>
+                    <li>Investment</li>
+                    <li>Save</li>
+                    <li>Transfer out</li>
+                    <li>Double Loan application</li>
+                    <li>Grants</li>
+                </ul>
+                <a href="{% url 'core_apps.core:payment-request-dashboard' %}" class="btn">
+                    <button  class="btn">Choose Plan</button>
+
+                </a>
+            </div>
+            
+            <!-- Premium Plan -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div class="plan-name">Premium</div>
+                    <div class="plan-price">$200<span style="font-size: 1rem;">/month</span></div>
+                    <div class="plan-period">billed monthly</div>
+                </div>
+                <ul class="plan-features">
+                    <li>Transfer in</li>
+                    <li>Investment</li>
+                    <li>Save</li>
+                    <li>Transfer out</li>
+                    <li>Multiple Loan application</li>
+                    <li>Multiple Grants application</li>
+                    <li>Faster Loan approval</li>
+                    <li>Faster Grants approval</li>
+
+                </ul>
+                <a href="{% url 'core_apps.core:payment-request-dashboard' %}" class="btn">
+                <button class="btn">Choose Plan</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+{% endblock content %}
+

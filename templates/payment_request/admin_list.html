@@ -1,0 +1,78 @@
+{% extends "partials/dashboard-base.html" %}
+{% load static %}
+{% block title %}Payment Requests Admin{% endblock %}
+{% block content %}
+<section class="dashboard-section">
+    <div class="overlay pt-120">
+        <div class="container-fruid">
+            <div class="main-content">
+                <div class="head-area d-flex align-items-center justify-content-between">
+                    <h4>Payment Requests Management</h4>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Reason</th>
+                                        <th>Screenshot</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pr in payment_requests %}
+                                    <tr>
+                                        <td>{{ pr.user.username }}</td>
+                                        <td>{{ pr.get_payment_type_display }}</td>
+                                        <td>${{ pr.amount }}</td>
+                                        <td>{{ pr.reason|truncatewords:5 }}</td>
+                                        <td>
+                                            {% if pr.payment_screenshot %}
+                                            <a href="{{ pr.payment_screenshot.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                View
+                                            </a>
+                                            {% else %}
+                                            <span class="text-muted">None</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if pr.status == 'pending' %}bg-warning
+                                                {% elif pr.status == 'approved' %}bg-success
+                                                {% elif pr.status == 'rejected' %}bg-danger
+                                                {% else %}bg-secondary{% endif %}">
+                                                {{ pr.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>{{ pr.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <form method="post" action="{% url 'core_apps.core:update-payment-status' pr.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                    {% for value, label in pr.STATUS_CHOICES %}
+                                                    <option value="{{ value }}" {% if pr.status == value %}selected{% endif %}>
+                                                        {{ label }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

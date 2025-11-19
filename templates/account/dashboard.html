@@ -1,0 +1,399 @@
+{% extends "partials/dashboard-base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+    <!-- Dashboard Section start -->
+    <section class="dashboard-section body-collapse">
+        <div class="overlay pt-120">
+            <div class="container-fruid">
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ form.errors }}</strong>
+                </div>
+                {% endif %}
+                <div class="row">
+                    <div class="col-xl-8 col-lg-7">
+                        <div class="section-content">
+                            <!-- Account Details -->
+                            <div class="acc-details">
+                                <div class="top-area">
+                                    <div class="left-side">
+                                        <h5>Hi, {{ kyc.full_name|title }}!</h5>
+                                        <h2>${{ account.account_balance|intcomma }}</h2>
+                                        <!-- Debt Overview -->
+                                        {% if debt %}
+                                        <div class="debt-overview mt-3">
+                                            <h6 class="text-danger">
+                                                Outstanding Debt: ${{ debt.remaining_amount|intcomma }}
+                                            </h6>
+                                            <small class="text-muted">
+                                                Status: {{ debt.get_status_display }}
+                                            </small>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="right-side">
+                                        <div class="right-top">
+                                            <select>
+                                                <option value="1">US Dollar</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bottom-area">
+                                    <div class="left-side">
+                                        <a href="{% url 'core_apps.core:search-account' %}" class="cmn-btn">Transfer Money</a>
+                                        <a href="{% url 'core_apps.core:request-search-account' %}" class="cmn-btn">Request Payment</a>
+                                    </div>
+                                    <div class="right-side">
+                                        <div class="dropdown-area">
+                                            <button type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <img src="{% static 'assets1/images/icon/option.png' %}" alt="icon">
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                <li><a class="dropdown-item" href="{% url 'core_apps.core:payment-request-dashboard' %}">Recipients</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'core_apps.core:payment-request-dashboard' %}">Request Money</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'core_apps.core:payment-request-dashboard' %}">Send Money</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'core_apps.core:payment-request-dashboard' %}">Bill Pay</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Debt Management Section -->
+                            {% if debt %}
+                            <div class="debt-management-area mt-40">
+                                <div class="section-header d-flex align-items-center justify-content-between">
+                                    <div class="section-text">
+                                        <h5>Debt Management</h5>
+                                        <p>Track and manage your outstanding debt</p>
+                                    </div>
+                                    <!-- Pay Button -->
+                                    <a href="{% url 'core_apps.core:payment-request-dashboard' %}" class="cmn-btn pay-debt-btn">
+                                        <i class="fas fa-money-bill-wave me-2"></i>
+                                        Pay Debt
+                                    </a>
+                                </div>
+                                <div class="debt-card">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="debt-info-item">
+                                                <span class="label">Debt Type:</span>
+                                                <span class="value">{{ debt.get_debt_type_display }}</span>
+                                            </div>
+                                            <div class="debt-info-item">
+                                                <span class="label">Original Amount:</span>
+                                                <span class="value">${{ debt.total_amount|intcomma }}</span>
+                                            </div>
+                                            <div class="debt-info-item">
+                                                <span class="label">Remaining Balance:</span>
+                                                <span class="value text-danger">${{ debt.remaining_amount|intcomma }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="debt-info-item">
+                                                <span class="label">Interest Rate:</span>
+                                                <span class="value">{{ debt.interest_rate }}%</span>
+                                            </div>
+                                            <div class="debt-info-item">
+                                                <span class="label">Due Date:</span>
+                                                <span class="value {% if debt.is_overdue %}text-danger{% endif %}">
+                                                    {{ debt.due_date|date:"M d, Y"|default:"Not set" }}
+                                                </span>
+                                            </div>
+                                            <div class="debt-info-item">
+                                                <span class="label">Amount Paid:</span>
+                                                <span class="value text-success">${{ debt.amount_paid|intcomma }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Progress Bar -->
+                                    {% if debt.total_amount > 0 %}
+                                    <div class="progress-area mt-4">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="small">Repayment Progress</span>
+                                            <span class="small">{{ debt.repayment_percentage }}%</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar {% if debt.repayment_percentage == 100 %}bg-success{% else %}bg-warning{% endif %}" 
+                                                 role="progressbar" 
+                                                 style="width: {{ debt.repayment_percentage|default:0 }}%;"
+                                                 aria-valuenow="{{ debt.repayment_percentage|default:0 }}" 
+                                                 aria-valuemin="0" 
+                                                 aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Removed Transaction History Section -->
+                            
+                        </div>
+                    </div>
+                    
+                    <!-- Right Sidebar -->
+                    <div class="col-xl-4 col-lg-5">
+                        <div class="side-items">
+                            <!-- Credit Cards -->
+                            <div class="single-item">
+                                <div class="section-text d-flex align-items-center justify-content-between">
+                                    <h6>Linked Payment system</h6>
+                                    <div class="right-side">
+                                        <div class="dropdown-area">
+                                            <button type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <img src="{% static 'assets1/images/icon/option.png' %}" alt="icon">
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    {% for c in credit_card %}
+                                        <a href="{% url 'core_apps.core:card-detail' c.card_id %}">
+                                            <div class="col-12">
+                                                <div class="card__main">
+                                                    <div class="{% if c.card_type == 'verve' %}Front_card{% endif %}    {% if c.card_type == 'master' %}masterCard{% endif %}    {% if c.card_type == 'visa' %}visaCard{% endif %}">
+                                                    <div class="top_card">
+                                                        <span class="visa">{{c.card_type|upper}}</span>
+                                                        <div class="logo">
+                                                            <img src="{% static 'assets1/images/card-logo.png' %}" class="logo" alt="logo">
+                                                        </div>
+                                                    </div>
+                                                    <div class="middle_card">
+                                                        <span class="chip"></span>
+                                                        <div class="card_number">{{c.number}}</div>
+                                                    </div>
+                                                    <div class="bottom_card">
+                                                        <div class="card_info">
+                                                        <div class="card_holder_name">${{c.amount|intcomma}}</div>
+                                                        <div class="card_holder_name">{{c.name}}</div>
+                                                        </div>
+                                                        <div class="card_info">
+                                                        <div class="card_holder_info">
+                                                            <span class="expire_month" >{{c.month}}</span>
+                                                            <span class="slash">/</span>
+                                                            <span class="expire_year">{{c.year}}</span>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                    <div class="back_card">
+                                                    <div class="top_card">
+                                                        <span class="black_strip"></span>
+                                                        <div class="cvc_strip">
+                                                        <span class="cvc_number">000</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bottom_card">
+                                                        <div class="flex">
+                                                        <span class="sticker"></span>
+                                                        <div class="logo1">
+                                                            <span></span>
+                                                            <span></span>
+                                                            <span></span>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    {% endfor %}
+
+                                    <div class="col-4">
+                                        <div class="single-card">
+                                            <button type="button" class="reg w-100" data-bs-toggle="modal" data-bs-target="#addcardMod">
+                                                <img src="{% static 'assets1/images/add-new.png' %}" alt="image" class="w-100">
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Debt Payment History -->
+                            {% if debt_payments %}
+                            <div class="single-item mt-4">
+                                <div class="section-text">
+                                    <h6>Recent Debt Payments</h6>
+                                </div>
+                                <div class="debt-payments-list">
+                                    {% for payment in debt_payments %}
+                                    <div class="debt-payment-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <p class="mb-1 small">{{ payment.get_payment_type_display }}</p>
+                                                <p class="mdr small">{{ payment.created_at|date:"M d, Y" }}</p>
+                                            </div>
+                                            <div class="text-end">
+                                                <p class="mb-1 text-success">${{ payment.amount|intcomma }}</p>
+                                                <span class="badge {% if payment.status == 'completed' %}bg-success{% else %}bg-warning{% endif %} small">
+                                                    {{ payment.get_status_display }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% if not forloop.last %}<hr class="my-2">{% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Dashboard Section end -->
+
+    <!-- Rest of your modals remain the same -->
+    <!-- Card Popup start -->
+    <div class="card-popup">
+        <!-- ... existing card popup code ... -->
+    </div>
+    <!-- Card Popup start -->
+
+    <!-- Add Card Popup start -->
+    <div class="add-card">
+        <!-- ... existing add card popup code ... -->
+    </div>
+    <!-- Add Card Popup start -->
+
+    <!-- Transactions Popup start -->
+    <div class="transactions-popup">
+        <!-- ... existing transactions popup code ... -->
+    </div>
+    <!-- Transactions Popup start -->
+
+    <!-- Fixed CSS without Django template syntax -->
+    <style>
+        .debt-management-area {
+            background: #fff;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section-header {
+            margin-bottom: 20px;
+        }
+        
+        .pay-debt-btn {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .pay-debt-btn:hover {
+            background: linear-gradient(45deg, #218838, #1e9e8a);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+        
+        .debt-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .debt-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .debt-info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .debt-info-item .label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .debt-info-item .value {
+            font-weight: 700;
+            color: #495057;
+            font-size: 14px;
+        }
+        
+        .debt-overview {
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .debt-payments-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .debt-payment-item {
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+        }
+        
+        .progress {
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        
+        .progress-bar {
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+        
+        .bg-success {
+            background-color: #28a745 !important;
+        }
+        
+        .bg-warning {
+            background-color: #ffc107 !important;
+        }
+        
+        .text-danger {
+            color: #dc3545 !important;
+        }
+        
+        .text-success {
+            color: #28a745 !important;
+        }
+        
+        .text-muted {
+            color: #6c757d !important;
+        }
+        
+        .badge {
+            font-size: 0.75em;
+            padding: 0.25em 0.4em;
+        }
+        
+        .bg-success.badge {
+            background-color: #28a745 !important;
+        }
+        
+        .bg-warning.badge {
+            background-color: #ffc107 !important;
+            color: #000 !important;
+        }
+    </style>
+{% endblock content %}

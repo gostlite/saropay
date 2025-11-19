@@ -1,0 +1,467 @@
+{% extends "partials/dashboard-base.html" %}
+{% load static %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Status</title>
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --primary-dark-blue: #1e40af;
+            --primary-light-blue: #3b82f6;
+            --light-bg: #f8fafc;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .funding-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px 40px 20px; /* Increased top padding to account for header */
+            margin-top: 60px; /* Additional margin to push content down */
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-blue);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .tabs {
+            display: flex;
+            background: var(--white);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            background: var(--white);
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            color: var(--primary-blue);
+            border-bottom: 3px solid var(--primary-blue);
+            background: var(--light-bg);
+        }
+        
+        .tab:hover:not(.active) {
+            background: var(--light-bg);
+            color: var(--primary-blue);
+        }
+        
+        .tab-content {
+            display: none;
+            background: var(--white);
+            padding: 30px;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .applications-list {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .application-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .application-card:hover {
+            box-shadow: var(--shadow);
+            border-color: var(--primary-light-blue);
+        }
+        
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .application-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+        
+        .application-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .meta-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .meta-value {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-under_review {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .application-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .detail-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px 20px;
+            margin-bottom: 8px;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--primary-blue);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: background 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark-blue);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .funding-container {
+                padding: 100px 15px 30px 15px; /* Even more top padding on mobile */
+                margin-top: 40px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .application-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .application-meta {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+            
+            .detail-row {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+            
+            .meta-item {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .funding-container {
+                padding: 90px 10px 20px 10px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 15px;
+            }
+            
+            .application-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="funding-container">
+        <div class="header">
+            <h1>Application Status</h1>
+            <p>Track the status of your loan and grant applications</p>
+        </div>
+        
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('loans')">
+                    Loan Applications
+                </button>
+                <button class="tab" onclick="switchTab('grants')">
+                    Grant Applications
+                </button>
+            </div>
+            
+            <!-- Loans Tab -->
+            <div id="loans-tab" class="tab-content active">
+                {% if user_loans %}
+                <div class="applications-list">
+                    {% for loan in user_loans %}
+                    <div class="application-card">
+                        <div class="application-header">
+                            <div class="application-title">
+                                {{ loan.get_loan_type_display }} Loan
+                            </div>
+                            <div class="application-meta">
+                                <div class="meta-item">
+                                    <span class="meta-label">Application ID</span>
+                                    <span class="meta-value">#{{ loan.id }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Amount</span>
+                                    <span class="meta-value">${{ loan.amount_requested }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Date</span>
+                                    <span class="meta-value">{{ loan.application_date|date:"M d, Y" }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Status</span>
+                                    <span class="status-badge status-{{ loan.status }}">
+                                        {{ loan.get_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="application-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Reason:</span>
+                                <span>{{ loan.reason|truncatewords:20 }}</span>
+                            </div>
+                            {% if loan.amount_range_min > 0 %}
+                            <div class="detail-row">
+                                <span class="detail-label">Amount Range:</span>
+                                <span>${{ loan.amount_range_min }} - ${{ loan.amount_range_max }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <h3>No Loan Applications</h3>
+                    <p>You haven't submitted any loan applications yet.</p>
+                    <a href="{% url 'core_apps.core:application' %}" class="btn" style="margin-top: 15px;">Apply for a Loan</a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Grants Tab -->
+            <div id="grants-tab" class="tab-content">
+                {% if user_grants %}
+                <div class="applications-list">
+                    {% for grant in user_grants %}
+                    <div class="application-card">
+                        <div class="application-header">
+                            <div class="application-title">
+                                {{ grant.get_grant_type_display }} Grant
+                            </div>
+                            <div class="application-meta">
+                                <div class="meta-item">
+                                    <span class="meta-label">Application ID</span>
+                                    <span class="meta-value">#{{ grant.id }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Amount</span>
+                                    <span class="meta-value">${{ grant.amount_requested }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Date</span>
+                                    <span class="meta-value">{{ grant.application_date|date:"M d, Y" }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Status</span>
+                                    <span class="status-badge status-{{ grant.status }}">
+                                        {{ grant.get_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="application-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Project:</span>
+                                <span>{{ grant.project_description|truncatewords:20|default:"No project description" }}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Reason:</span>
+                                <span>{{ grant.reason|truncatewords:20 }}</span>
+                            </div>
+                            {% if grant.organization_name %}
+                            <div class="detail-row">
+                                <span class="detail-label">Organization:</span>
+                                <span>{{ grant.organization_name }}</span>
+                            </div>
+                            {% endif %}
+                            {% if grant.amount_range_min > 0 %}
+                            <div class="detail-row">
+                                <span class="detail-label">Amount Range:</span>
+                                <span>${{ grant.amount_range_min }} - ${{ grant.amount_range_max }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <h3>No Grant Applications</h3>
+                    <p>You haven't submitted any grant applications yet.</p>
+                    <a href="{% url 'core_apps.core:application' %}" class="btn" style="margin-top: 15px;">Apply for a Grant</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.currentTarget.classList.add('active');
+        }
+
+        // Ensure tabs are properly positioned on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scrolling to top when switching tabs (optional)
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    setTimeout(() => {
+                        document.querySelector('.tabs-container').scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 100);
+                });
+            });
+        });
+    </script>
+</body>
+{% endblock content %}

@@ -1,0 +1,220 @@
+{% extends "partials/dashboard-base.html" %}
+{% load static %}
+{% block title %}Create Payment Request{% endblock %}
+{% block content %}
+<section class="dashboard-section body-collapse pay step">
+    <div class="overlay pt-120">
+        <div class="container-fruid">
+            <div class="main-content">
+                <div class="head-area d-flex align-items-center justify-content-between">
+                    <h4>Create Payment Request</h4>
+                    <a href="{% url 'core_apps.core:payment-request-dashboard' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+
+                <!-- Wallet Info Reminder -->
+                <div class="alert alert-info mb-4">
+                    <h6><i class="fas fa-wallet"></i> Payment Instructions</h6>
+                    <p class="mb-1">Please make payment to:</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Account:</strong> {{ account.account_number }}<br>
+                            <strong>Name:</strong> {{ kyc.full_name }}
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary copy-wallet" data-account="{{ account.account_number }}">
+                            <i class="fas fa-copy"></i> Copy Details
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Payment Request Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Payment Request Form</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            {% if messages %}
+                            <div class="messages mb-4">
+                                {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            <!-- Payment Type -->
+                            <div class="form-group mb-4">
+                                <label class="form-label">Payment Type *</label>
+                                {{ form.payment_type }}
+                                {% if form.payment_type.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.payment_type.errors %}
+                                    <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Amount -->
+                            <div class="form-group mb-4">
+                                <label for="{{ form.amount.id_for_label }}" class="form-label">Amount *</label>
+                                {{ form.amount }}
+                                {% if form.amount.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.amount.errors %}
+                                    <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Reason -->
+                            <div class="form-group mb-4">
+                                <label for="{{ form.reason.id_for_label }}" class="form-label">Reason for Payment *</label>
+                                {{ form.reason }}
+                                {% if form.reason.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.reason.errors %}
+                                    <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Payment Screenshot -->
+                            <div class="form-group mb-4">
+                                <label for="{{ form.payment_screenshot.id_for_label }}" class="form-label">Payment Screenshot *</label>
+                                {{ form.payment_screenshot }}
+                                <small class="form-text text-muted">
+                                    Upload a clear screenshot of your payment transaction as proof.
+                                </small>
+                                {% if form.payment_screenshot.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.payment_screenshot.errors %}
+                                    <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Preview Section -->
+                            <div class="preview-section mb-4" id="previewSection" style="display: none;">
+                                <h6>Preview:</h6>
+                                <div class="border p-3 rounded">
+                                    <img id="imagePreview" src="#" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-paper-plane"></i> Submit Payment Request
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.payment-type-radio {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.payment-type-radio li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.payment-type-radio li:hover {
+    border-color: #1e3a8a;
+    background-color: #f8f9fa;
+}
+
+.payment-type-radio input[type="radio"] {
+    margin-right: 10px;
+}
+
+.payment-type-radio label {
+    margin: 0;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.form-control {
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+}
+
+.form-control:focus {
+    border-color: #1e3a8a;
+    box-shadow: 0 0 0 0.2rem rgba(30, 58, 138, 0.25);
+}
+
+.preview-section {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Image preview
+    const screenshotInput = document.getElementById('{{ form.payment_screenshot.id_for_label }}');
+    const previewSection = document.getElementById('previewSection');
+    const imagePreview = document.getElementById('imagePreview');
+
+    screenshotInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                previewSection.style.display = 'block';
+            }
+            
+            reader.readAsDataURL(this.files[0]);
+        } else {
+            previewSection.style.display = 'none';
+        }
+    });
+
+    // Copy wallet details
+    const copyWalletBtn = document.querySelector('.copy-wallet');
+    if (copyWalletBtn) {
+        copyWalletBtn.addEventListener('click', function() {
+            const accountNumber = this.getAttribute('data-account');
+            const textToCopy = `Account Number: ${accountNumber}\nAccount Name: {{ kyc.full_name }}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-outline-primary');
+                }, 2000);
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

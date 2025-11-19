@@ -1,0 +1,216 @@
+{% extends "partials/dashboard-base.html" %}
+{% load static %}
+{% block title %}Payment Request Dashboard{% endblock %}
+{% block content %}
+<section class="dashboard-section body-collapse pay step">
+    <div class="overlay pt-120">
+        <div class="container-fruid">
+            <div class="main-content">
+                <div class="head-area d-flex align-items-center justify-content-between">
+                    <h4>Payment Request Dashboard</h4>
+                </div>
+                
+                <!-- Wallet Information -->
+                <div class="wallet-info-section mb-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Wallet Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <label>Account Number:</label>
+                                        <div class="d-flex align-items-center">
+                                            <span class="wallet-value me-3">{{ account.account_number }}</span>
+                                            <button class="btn btn-sm btn-outline-secondary copy-btn" data-text="{{ account.account_number }}">
+                                                <i class="fas fa-copy"></i> Copy
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="info-item mt-3">
+                                        <label>Account Name:</label>
+                                        <span class="wallet-value">{{ kyc.full_name }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <label>Bank Name:</label>
+                                        <span class="wallet-value">Your Bank Name</span>
+                                    </div>
+                                    <div class="info-item mt-3">
+                                        <label>Current Balance:</label>
+                                        <span class="wallet-value">${{ account.account_balance }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Instructions:</strong> Make payment to the account above and submit the screenshot as proof.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions mb-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{% url 'core_apps.core:create-payment-request' %}" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-plus-circle"></i> New Payment Request
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="#payment-history" class="btn btn-outline-primary btn-lg w-100">
+                                <i class="fas fa-history"></i> View History
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Requests List -->
+                <div class="payment-requests-section" id="payment-history">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recent Payment Requests</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if payment_requests %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Reason</th>
+                                            <th>Status</th>
+                                            <th>Screenshot</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for pr in payment_requests %}
+                                        <tr>
+                                            <td>{{ pr.created_at|date:"M d, Y" }}</td>
+                                            <td>
+                                                <span class="badge bg-info">
+                                                    {{ pr.get_payment_type_display }}
+                                                </span>
+                                            </td>
+                                            <td>${{ pr.amount }}</td>
+                                            <td>{{ pr.reason|truncatewords:10 }}</td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if pr.status == 'pending' %}bg-warning
+                                                    {% elif pr.status == 'approved' %}bg-success
+                                                    {% elif pr.status == 'rejected' %}bg-danger
+                                                    {% else %}bg-secondary{% endif %}">
+                                                    {{ pr.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if pr.payment_screenshot %}
+                                                <a href="{{ pr.payment_screenshot.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                                {% else %}
+                                                <span class="text-muted">No screenshot</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No payment requests yet.</p>
+                                <a href="{% url 'core_apps.core:create-payment-request' %}" class="btn btn-primary">
+                                    Create Your First Payment Request
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.wallet-info-section .info-item {
+    margin-bottom: 15px;
+}
+
+.wallet-info-section label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.wallet-value {
+    font-size: 1.1rem;
+    color: #1e3a8a;
+    font-weight: 500;
+}
+
+.copy-btn {
+    padding: 2px 8px;
+    font-size: 0.8rem;
+}
+
+.quick-actions .btn {
+    padding: 15px;
+    font-size: 1.1rem;
+}
+
+.payment-type-radio {
+    list-style: none;
+    padding: 0;
+}
+
+.payment-type-radio li {
+    margin-bottom: 10px;
+}
+
+.payment-type-radio input[type="radio"] {
+    margin-right: 10px;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+</style>
+
+<script>
+// Copy to clipboard functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    
+    copyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const textToCopy = this.getAttribute('data-text');
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Show feedback
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                this.classList.remove('btn-outline-secondary');
+                this.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-outline-secondary');
+                }, 2000);
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
