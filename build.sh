@@ -10,4 +10,4 @@ python manage.py collectstatic --noinput
 python manage.py migrate
 
 
-python sorapay/manage.py createsuperuser --no-input || true
+python manage.py createsuperuser --no-input || true
