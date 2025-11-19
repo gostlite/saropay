@@ -4,8 +4,8 @@ set -o errexit
 
 pip install -r requirements.txt
 
-python3.11 manage.py collectstatic --noinput
+python manage.py collectstatic --noinput
 
-python3.11 manage.py migrate
+python manage.py migrate
 
-python3.11 manage.py createsuperuser
+python manage.py createsuperuser
