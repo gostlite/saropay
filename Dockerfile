@@ -31,6 +31,7 @@ COPY . .
 # Collect static files
 RUN python manage.py collectstatic --noinput
 RUN python manage.py migrate
+RUN python manage.py createsuperuser --no-input || true
 
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
