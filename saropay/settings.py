@@ -43,6 +43,12 @@ else:
     ALLOWED_HOSTS = ["https://saropay.pythonanywhere.com/","web-production-87f8.up.railway.app",
     ".railway.app","saropay-t8yutumj.b4a.run","localhost","127.0.0.1", "saropay.onrender.com"]
 
+    CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-87f8.up.railway.app',
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+]
+
 
 # Application definition
 
