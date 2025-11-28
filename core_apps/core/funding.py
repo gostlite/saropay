@@ -49,7 +49,7 @@ def require_completed_payment(view_func):
         if not has_completed_payment:
             messages.warning(
                 request, 
-                'You need to subscribe to a plan to access Grant or Loan applications.'
+                'You need to subscribe to a plan to access Grant or Loan applications.Contact Support for more details.'
             )
             return redirect('core_apps.core:subscription-plans')
         
@@ -58,7 +58,6 @@ def require_completed_payment(view_func):
 
 @login_required
 @kyc_required
-@require_completed_payment
 def funding_application(request):
     """Main funding application page with both loan and grant forms"""
     try:
